@@ -14,7 +14,7 @@
 #
 #	by André Lange	Dec 2016
 
-readonly VERSION='1.7.0'
+readonly VERSION='2.0.0'
 
 readonly BIN_DIR="/usr/bin/"
 readonly SBIN_DIR="/usr/sbin/"
