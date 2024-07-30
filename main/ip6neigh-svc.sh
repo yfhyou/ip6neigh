@@ -22,7 +22,8 @@ readonly CONFIG_FILE='/etc/config/ip6neigh'
 readonly OUI_FILE='/usr/share/ip6neigh/oui.gz'
 
 
-LEASE_FILE=`uci get dhcp.@dnsmasq[0].leasefile`
+LEASE4_FILE=`uci get dhcp.@dnsmasq[0].leasefile`
+LEASE6_FILE=`uci get dhcp.@odhcpd[0].leasefile`
 LAN_IFACE=''
 VERSION=0
 SNOOP=0
@@ -83,10 +84,15 @@ fi
 readonly HOSTS_FILE="/tmp/hosts/ip6neigh.$LAN_IFACE"
 readonly CACHE_FILE="/tmp/ip6neigh.$LAN_IFACE.cache"
 readonly TEMP_FILE="/tmp/ip6neigh.$LAN_IFACE.tmp"
-readonly LEASE_FILE=`uci get dhcp.@dnsmasq[0].leasefile`
+readonly LEASE4_FILE=`uci get dhcp.@dnsmasq[0].leasefile`
+readonly LEASE6_FILE=`uci get dhcp.@odhcpd[0].leasefile`
 
-if [ -z "$LEASE_FILE" ] ; then
-	LEASE_FILE='/tmp/dhcp.leases'
+if [ -z "$LEASE4_FILE" ] ; then
+	LEASE4_FILE='/tmp/dhcp.leases'
+fi
+
+if [ -z "$LEASE6_FILE" ] ; then
+	LEASE6_FILE='/tmp/hosts/odhcpd'
 fi
 
 #Load dependencies
@@ -407,7 +413,7 @@ dhcp_name() {
 	#Look for a DHCPv6 lease with DUID-LL or DUID-LLT matching the neighbor's MAC address.
 	if [ "$DHCPV6_NAMES" -gt 0 ]; then
 		match=$(echo "$mac" | tr -d ':')
-		name=$(grep -m 1 -E "^# ${LAN_DEV} (00010001.{8}|00030001)${match} [^ ]* [^-]" /tmp/hosts/odhcpd | cut -d ' ' -f5)
+		name=$(grep -m 1 -E "^# ${LAN_DEV} (00010001.{8}|00030001)${match} [^ ]* [^-]" $LEASE6_FILE | cut -d ' ' -f5)
 		
 		#Success getting name from DHCPv6.
 		if [ -n "$name" ]; then
@@ -419,7 +425,7 @@ dhcp_name() {
 
 	#If couldn't find a match in DHCPv6 leases then look into the DHCPv4 leases file.
 	if [ "$DHCPV4_NAMES" -gt 0 ]; then
-		name=$(grep -m 1 -E " $mac [^ ]{7,15} ([^*])" $LEASE_FILE | cut -d ' ' -f4)
+		name=$(grep -m 1 -E " $mac [^ ]{7,15} ([^*])" $LEASE4_FILE | cut -d ' ' -f4)
 		
 		#Success getting name from DHCPv4.
 		if [ -n "$name" ]; then
