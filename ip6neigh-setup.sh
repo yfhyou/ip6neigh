@@ -28,7 +28,7 @@ readonly CACHE_FILE="/tmp/ip6neigh.cache"
 
 readonly SERVICE_NAME="ip6neigh-svc.sh"
 
-readonly REPO="https://raw.githubusercontent.com/AndreBL/ip6neigh/master/"
+readonly REPO="https://raw.githubusercontent.com/yfhyou/ip6neigh/local-multiple/"
 
 #Installation list
 readonly inst_list="
