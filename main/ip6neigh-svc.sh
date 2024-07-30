@@ -225,12 +225,12 @@ rename() {
 	local newname="$2"
 
 	#Must save changes to another temp file and then move it over the main file.
-	sed "s/ ${oldname}/ ${newname}/g" "$HOSTS_FILE" > "$TEMP_FILE"
-	mv "$TEMP_FILE" "$HOSTS_FILE"
+	#Change name in-place with SED
+	sed -i.bak "s/ ${oldname}/ ${newname}/g" "$HOSTS_FILE" 
 	
 	#Deletes the old cached entry if dynamic.
-	grep -v "0. ${oldname}$" "$CACHE_FILE" > "$TEMP_FILE"
-	mv "$TEMP_FILE" "$CACHE_FILE"
+	# Delete with SED
+	sed -i.bak "/0. ${oldname}$/d" "$CACHE_FILE"
 
 	logmsg "Renamed host: $oldname to $newname"
 	reload_pending=1
